@@ -23,12 +23,16 @@ func FetchUser(db *redis.Client, id int64) (*User, error) {
 
 	val, err := db.HGetAll(key).Result()
 	if err != nil {
-		return nil, err
+		return nil, ErrDatabase
+	}
+
+	if len(val) == 0 {
+		return nil, ErrUserNotExist
 	}
 
 	timestamp, err := strconv.ParseInt(val["timestamp"], 10, 64)
 	if err != nil {
-		return nil, err
+		return nil, ErrUserInvalidTimestamp
 	}
 
 	return &User{
@@ -44,12 +48,12 @@ func FetchUser(db *redis.Client, id int64) (*User, error) {
 func FetchUserByName(db *redis.Client, name string) (*User, error) {
 	val, err := db.HGet("usernames", name).Result()
 	if err != nil {
-		return nil, err
+		return nil, ErrUserNotExist
 	}
 
 	id, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		return nil, err
+		return nil, ErrUserInvalidID
 	}
 
 	return FetchUser(db, id)

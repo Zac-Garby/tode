@@ -80,13 +80,13 @@ func (a *API) handleUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := FetchUserByName(a.db, name)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
 	out, err := json.Marshal(user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
@@ -98,19 +98,19 @@ func (a *API) handleUserID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(rawID, 10, 64)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
 	user, err := FetchUser(a.db, id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
 	out, err := json.Marshal(user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
