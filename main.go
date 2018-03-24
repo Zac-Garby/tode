@@ -19,7 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("listening on :7000")
+	fmt.Println("listening on http://localhost:7000")
 	http.Handle("/", r)
 	http.ListenAndServe(":7000", nil)
 }
