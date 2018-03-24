@@ -18,6 +18,8 @@ type User struct {
 	Timestamp int64   `json:"joined"`
 }
 
+// FetchUser fetches a User from the database, by id. Returns an error if the
+// user doesn't exist or other exceptional occurances.
 func FetchUser(db *redis.Client, id int64) (*User, error) {
 	key := fmt.Sprintf("user:%d", id)
 
@@ -45,6 +47,8 @@ func FetchUser(db *redis.Client, id int64) (*User, error) {
 	}, nil
 }
 
+// FetchUserByName fetches a User from the database by name. It looks up to
+// id then just calls FetchUser.
 func FetchUserByName(db *redis.Client, name string) (*User, error) {
 	val, err := db.HGet("usernames", name).Result()
 	if err != nil {
