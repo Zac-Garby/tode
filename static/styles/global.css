@@ -1,0 +1,38 @@
+* {
+	box-sizing: border-box;
+	font-family: 'Roboto', sans-serif;
+}
+
+div.wrapper {
+	width: 700px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	margin: auto;
+}
+
+div.columns {
+	display: flex;
+	flex-direction: row;
+}
+
+div.columns > * {
+	flex: 1;
+}
+
+em {
+	font-style: normal;
+	color: #3c3b3c;
+}
+
+a {
+	color: red;
+}
+
+.red {
+	color: red;
+}
+
+.center {
+	text-align: center;
+}
