@@ -26,8 +26,15 @@ import (
 // with more information.
 
 // Register registers the API routes on
-func Register(r mux.Router) {
+func Register(r *mux.Router) {
 	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}", handleQuery)
+	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}/{limit:(?:[0-9]+|first)}", handleQueryLimit)
+	r.HandleFunc("/api/random", handleRandom)
+	r.HandleFunc("/api/random/{number:[0-9]+}", handleRandomLimit)
+	r.HandleFunc("/api/user/{id:(?:#[0-9]+|[a-zA-Z0-9_-]+)}", handleUser)
+	r.HandleFunc("/api/eq/{id:[0-9]+}", handleEquation)
+	r.HandleFunc("/api/all/users", handleAllUsers)
+	r.HandleFunc("/api/all/equations", handleAllEquations)
 }
 
 func handleQuery(w http.ResponseWriter, r *http.Request) {
