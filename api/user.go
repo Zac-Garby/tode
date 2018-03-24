@@ -15,7 +15,7 @@ type User struct {
 	Hash      string  `json:"-"`
 	Salt      string  `json:"-"`
 	Equations []int64 `json:"equations"`
-	Timestamp int64   `json:"timestamp"`
+	Timestamp int64   `json:"joined"`
 }
 
 func FetchUser(db *redis.Client, id int64) (*User, error) {
@@ -39,4 +39,18 @@ func FetchUser(db *redis.Client, id int64) (*User, error) {
 		Salt:      val["salt"],
 		Timestamp: timestamp,
 	}, nil
+}
+
+func FetchUserByName(db *redis.Client, name string) (*User, error) {
+	val, err := db.HGet("usernames", name).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return FetchUser(db, id)
 }

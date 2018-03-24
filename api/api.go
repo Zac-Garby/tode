@@ -19,7 +19,8 @@ import (
 //  - /api/query/{op}/{query}/{limit | "first"}
 //  - /api/random
 //  - /api/random/{number}
-//  - /api/user/{#id | name}
+//  - /api/user/{name}
+//  - /api/user/id/{id}
 //  - /api/eq/{id}
 //  - /api/all/users
 //  - /api/all/equations
@@ -49,7 +50,8 @@ func (a *API) Register(r *mux.Router) error {
 	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}/{limit:(?:[0-9]+|first)}", a.handleQueryLimit)
 	r.HandleFunc("/api/random", a.handleRandom)
 	r.HandleFunc("/api/random/{number:[0-9]+}", a.handleRandomLimit)
-	r.HandleFunc("/api/user/{id:(?:#[0-9]+|[a-zA-Z0-9_-]+)}", a.handleUser)
+	r.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
+	r.HandleFunc("/api/user/id/{id:[0-9]+}", a.handleUserID)
 	r.HandleFunc("/api/eq/{id:[0-9]+}", a.handleEquation)
 	r.HandleFunc("/api/all/users", a.handleAllUsers)
 	r.HandleFunc("/api/all/equations", a.handleAllEquations)
@@ -74,7 +76,26 @@ func (a *API) handleRandomLimit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) handleUser(w http.ResponseWriter, r *http.Request) {
+	name := mux.Vars(r)["name"]
+
+	user, err := FetchUserByName(a.db, name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	out, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(out)
+}
+
+func (a *API) handleUserID(w http.ResponseWriter, r *http.Request) {
 	rawID := mux.Vars(r)["id"]
+
 	id, err := strconv.ParseInt(rawID, 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
