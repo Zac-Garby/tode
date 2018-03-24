@@ -1,13 +1,17 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 )
 
-// The tode API is the core functionality of tode. It can be used directly via a HTTP request, or by using the web interface.
+// The API encapsulates the core functionality of tode. It can be used directly via a HTTP request, or by using the
+// web interface.
 //
 // It supports a number of routes:
 //
@@ -24,47 +28,82 @@ import (
 // In the first two, {op} is one of ~, =, or !, which mean roughly, contains, and doesn't contain, respectively.
 // If a request encounters an error, it returns some JSON looking something like {"error": "what happened?"}, possibly
 // with more information.
+type API struct {
+	db *redis.Client
+}
 
 // Register registers the API routes on
-func Register(r *mux.Router) {
-	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}", handleQuery)
-	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}/{limit:(?:[0-9]+|first)}", handleQueryLimit)
-	r.HandleFunc("/api/random", handleRandom)
-	r.HandleFunc("/api/random/{number:[0-9]+}", handleRandomLimit)
-	r.HandleFunc("/api/user/{id:(?:#[0-9]+|[a-zA-Z0-9_-]+)}", handleUser)
-	r.HandleFunc("/api/eq/{id:[0-9]+}", handleEquation)
-	r.HandleFunc("/api/all/users", handleAllUsers)
-	r.HandleFunc("/api/all/equations", handleAllEquations)
+func (a *API) Register(r *mux.Router) error {
+	a.db = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	_, err := a.db.Ping().Result()
+	if err != nil {
+		return err
+	}
+
+	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}", a.handleQuery)
+	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}/{limit:(?:[0-9]+|first)}", a.handleQueryLimit)
+	r.HandleFunc("/api/random", a.handleRandom)
+	r.HandleFunc("/api/random/{number:[0-9]+}", a.handleRandomLimit)
+	r.HandleFunc("/api/user/{id:(?:#[0-9]+|[a-zA-Z0-9_-]+)}", a.handleUser)
+	r.HandleFunc("/api/eq/{id:[0-9]+}", a.handleEquation)
+	r.HandleFunc("/api/all/users", a.handleAllUsers)
+	r.HandleFunc("/api/all/equations", a.handleAllEquations)
+
+	return nil
 }
 
-func handleQuery(w http.ResponseWriter, r *http.Request) {
+func (a *API) handleQuery(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
 
-func handleQueryLimit(w http.ResponseWriter, r *http.Request) {
+func (a *API) handleQueryLimit(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
 
-func handleRandom(w http.ResponseWriter, r *http.Request) {
+func (a *API) handleRandom(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
 
-func handleRandomLimit(w http.ResponseWriter, r *http.Request) {
+func (a *API) handleRandomLimit(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
 
-func handleUser(w http.ResponseWriter, r *http.Request) {
+func (a *API) handleUser(w http.ResponseWriter, r *http.Request) {
+	rawID := mux.Vars(r)["id"]
+	id, err := strconv.ParseInt(rawID, 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user, err := FetchUser(a.db, id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	out, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(out)
+}
+
+func (a *API) handleEquation(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
 
-func handleEquation(w http.ResponseWriter, r *http.Request) {
+func (a *API) handleAllUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
 
-func handleAllUsers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, `{"error": "not implemented"}`)
-}
-
-func handleAllEquations(w http.ResponseWriter, r *http.Request) {
+func (a *API) handleAllEquations(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
