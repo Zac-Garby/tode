@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# This script is useful for testing the API. It takes the first argument to the program and sends a request to
+# localhost:7000/api/$1, where $1 is the argument. The result of that is piped into Python's json tool, to pretty
+# print the response.
+
+curl localhost:7000/api/$1 --silent | python -m json.tool
