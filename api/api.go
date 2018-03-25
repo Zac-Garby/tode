@@ -127,13 +127,13 @@ func (a *API) handleEquation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := a.FetchEquation(id)
+	equation, err := a.FetchEquation(id)
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
-	out, err := json.Marshal(user)
+	out, err := json.Marshal(equation)
 	if err != nil {
 		writeError(w, err)
 		return
