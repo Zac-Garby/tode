@@ -26,7 +26,7 @@ import (
 //  - /api/all/equations
 //
 // Each route returns its result in the JSON format. You can probably guess what they all do.
-// In the first two, {op} is one of ~, =, r, or !, which mean roughly, contains, doesn't contain, and
+// In the first two, {op} is one of ~, =, !, or r, which mean roughly, contains, doesn't contain, and
 // matches regex, respectively.
 // If a request encounters an error, it returns some JSON looking something like
 // {"error": "what happened?"}, possibly with more information.
