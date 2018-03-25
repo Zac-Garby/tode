@@ -3,7 +3,13 @@
 # This script starts a redis server (using redis-server) and then installs and runs tode. No output is
 # shown from the redis server, however, so if something doesn't work it may be a problem with redis
 # which isn't being shown.
+# This script also sets various environment variables before running the tode server. PORT is exported.
 
 redis-server > /dev/null &
 go install
+
+PORT=7000            \
+REDIS=localhost:6379 \
+REDIS_PW=""          \
+REDIS_DB=0           \
 tode

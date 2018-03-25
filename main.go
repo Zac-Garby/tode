@@ -9,7 +9,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var port = os.Getenv("PORT")
+
 func main() {
+	if port == "" {
+		port = "7000"
+	}
+
 	var (
 		r = mux.NewRouter()
 		a = new(api.API)
@@ -20,7 +26,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("listening on http://localhost:7000")
+	fmt.Println("listening on http://localhost:" + port)
 	http.Handle("/", r)
-	http.ListenAndServe(":7000", nil)
+	http.ListenAndServe(":"+port, nil)
 }

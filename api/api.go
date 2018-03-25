@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-redis/redis"
@@ -36,13 +37,33 @@ type API struct {
 
 // Register registers the API routes on
 func (a *API) Register(r *mux.Router) error {
+	addr := os.Getenv("REDIS")
+	if addr == "" {
+		addr = "localhost:6379"
+	}
+
+	pw := os.Getenv("REDIS_PW")
+	if pw == "" {
+		pw = ""
+	}
+
+	db := os.Getenv("REDIS_DB")
+	if db == "" {
+		db = "0"
+	}
+
+	dbi, err := strconv.ParseInt(db, 10, 32)
+	if err != nil {
+		return fmt.Errorf("env var $REDIS_DB (%s) is not an integer", db)
+	}
+
 	a.db = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:     addr,
+		Password: pw,
+		DB:       int(dbi),
 	})
 
-	_, err := a.db.Ping().Result()
+	_, err = a.db.Ping().Result()
 	if err != nil {
 		return err
 	}
