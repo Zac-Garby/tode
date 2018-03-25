@@ -48,3 +48,16 @@ $ ./route user/id/0
 	...
 }
 ```
+
+### Config
+
+The server can be configured using environment variables. These are the defaults:
+
+```
+PORT=7000
+REDIS=localhost:6379
+REDIS_PW=""
+REDIS_DB=0
+```
+
+They are set inside `./start`, too.
