@@ -26,5 +26,5 @@ tode
 Unless you encountered any errors, you should now have two servers running: a Redis server and a tode server. Open a browser and go to [localhost:7000](localhost:7000) to use the web frontend, or access the HTTP API by sending HTTP requests via curl:
 
 ```
-curl http://localhost:7000/api/all/users
+curl http://localhost:7000/api/all/users | python -m json.tool
 ```
