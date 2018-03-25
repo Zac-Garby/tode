@@ -78,7 +78,7 @@ func (a *API) handleRandomLimit(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleUser(w http.ResponseWriter, r *http.Request) {
 	name := mux.Vars(r)["name"]
 
-	user, err := FetchUserByName(a.db, name)
+	user, err := a.FetchUserByName(name)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -102,7 +102,7 @@ func (a *API) handleUserID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := FetchUser(a.db, id)
+	user, err := a.FetchUser(id)
 	if err != nil {
 		writeError(w, err)
 		return
