@@ -7,9 +7,4 @@
 
 redis-server > /dev/null &
 go install
-
-PORT=7000            \
-REDIS=localhost:6379 \
-REDIS_PW=""          \
-REDIS_DB=0           \
 tode
