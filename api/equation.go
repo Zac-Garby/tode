@@ -70,11 +70,5 @@ func (a *API) getCategories(id int64) ([]string, error) {
 		return nil, ErrDatabase
 	}
 
-	categories := make([]string, len(val))
-
-	for i, c := range val {
-		categories[i] = fmt.Sprintf("%v", c)
-	}
-
-	return categories, nil
+	return val, nil
 }
