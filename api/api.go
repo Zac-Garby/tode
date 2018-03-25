@@ -143,7 +143,19 @@ func (a *API) handleEquation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) handleAllUsers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, `{"error": "not implemented"}`)
+	users, err := a.FetchAllUsers()
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	out, err := json.Marshal(users)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Write(out)
 }
 
 func (a *API) handleAllEquations(w http.ResponseWriter, r *http.Request) {

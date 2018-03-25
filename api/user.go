@@ -67,6 +67,33 @@ func (a *API) FetchUserByName(name string) (*User, error) {
 	return a.FetchUser(id)
 }
 
+// FetchAllUsers creates a slice containing all users in the database. FetchUser
+// is called for each one.
+func (a *API) FetchAllUsers() ([]*User, error) {
+	ids, err := a.db.SMembers("users").Result()
+	if err != nil {
+		return nil, ErrDatabase
+	}
+
+	users := make([]*User, len(ids))
+
+	for i, idStr := range ids {
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			return nil, ErrUserInvalidID
+		}
+
+		user, err := a.FetchUser(id)
+		if err != nil {
+			return nil, ErrUserNotExist
+		}
+
+		users[i] = user
+	}
+
+	return users, nil
+}
+
 func (a *API) fetchEquationsOfUser(id int64) ([]int64, error) {
 	key := fmt.Sprintf("user:%d:equations", id)
 
