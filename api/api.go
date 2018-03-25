@@ -26,9 +26,10 @@ import (
 //  - /api/all/equations
 //
 // Each route returns its result in the JSON format. You can probably guess what they all do.
-// In the first two, {op} is one of ~, =, or !, which mean roughly, contains, and doesn't contain, respectively.
-// If a request encounters an error, it returns some JSON looking something like {"error": "what happened?"}, possibly
-// with more information.
+// In the first two, {op} is one of ~, =, r, or !, which mean roughly, contains, doesn't contain, and
+// matches regex, respectively.
+// If a request encounters an error, it returns some JSON looking something like
+// {"error": "what happened?"}, possibly with more information.
 type API struct {
 	db *redis.Client
 }
@@ -46,8 +47,8 @@ func (a *API) Register(r *mux.Router) error {
 		return err
 	}
 
-	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}", a.handleQuery)
-	r.HandleFunc("/api/query/{op:(?:~|=|!)}/{query}/{limit:(?:[0-9]+|first)}", a.handleQueryLimit)
+	r.HandleFunc("/api/query/{op:(?:~|=|!|r)}/{query}", a.handleQuery)
+	r.HandleFunc("/api/query/{op:(?:~|=|!|r)}/{query}/{limit:(?:[0-9]+|first)}", a.handleQueryLimit)
 	r.HandleFunc("/api/random", a.handleRandom)
 	r.HandleFunc("/api/random/{number:[0-9]+}", a.handleRandomLimit)
 	r.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
