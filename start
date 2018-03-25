@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# This script starts a redis server (using redis-server) and then installs and runs tode. No output is
+# shown from the redis server, however, so if something doesn't work it may be a problem with redis
+# which isn't being shown.
+
+redis-server > /dev/null &
+go install
+tode
