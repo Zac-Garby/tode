@@ -10,9 +10,10 @@ import (
 )
 
 func main() {
-	r := mux.NewRouter()
-
-	a := new(api.API)
+	var (
+		r = mux.NewRouter()
+		a = new(api.API)
+	)
 
 	if err := a.Register(r); err != nil {
 		fmt.Fprintln(os.Stderr, err)
