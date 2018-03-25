@@ -13,7 +13,7 @@ function example() {
 		"E = 1/2 mv^2",
 	]
 	
-	if (form("regex").checked) {
+	if (form("search-type").value == "regex") {
 		values = [
 			`^F = .*`,
 			`^.* = hf$`,
