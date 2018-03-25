@@ -38,10 +38,10 @@ $ ./start
 listening on http://localhost:7000
 ```
 
-Then, in another terminal window, you can use `run` to test the API and automatically pretty-print it using Python's json.tool module.
+Then, in another terminal window, you can use `route` to test the API and automatically pretty-print it using Python's json.tool module.
 
 ```
-$ ./run user/id/0
+$ ./route user/id/0
 {
 	"name": ...
 	...
