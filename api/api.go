@@ -118,7 +118,27 @@ func (a *API) handleUserID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) handleEquation(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, `{"error": "not implemented"}`)
+	rawID := mux.Vars(r)["id"]
+
+	id, err := strconv.ParseInt(rawID, 10, 64)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	user, err := a.FetchEquation(id)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	out, err := json.Marshal(user)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Write(out)
 }
 
 func (a *API) handleAllUsers(w http.ResponseWriter, r *http.Request) {
