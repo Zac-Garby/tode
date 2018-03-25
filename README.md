@@ -28,3 +28,23 @@ Unless you encountered any errors, you should now have two servers running: a Re
 ```
 curl http://localhost:7000/api/all/users | python -m json.tool
 ```
+
+### Using the scripts
+
+I've written some useful bash scripts for starting the servers and using the API. Instead of using up two terminal windows and manually starting the redis server and the tode server, you can alternatively execute `start`:
+
+```
+$ ./start
+listening on http://localhost:7000
+```
+
+Then, in another terminal window, you can use `run` to test the API and automatically pretty-print it using Python's json.tool module.
+
+```
+$ ./run user/id/0
+{
+	"name": ...
+	...
+	...
+}
+```
