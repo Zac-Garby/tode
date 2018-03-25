@@ -3,27 +3,25 @@ package api
 import (
 	"fmt"
 	"strconv"
-
-	"github.com/go-redis/redis"
 )
 
 // A User is an in-memory representation of a user from the database.
 type User struct {
-	ID        int64   `json:"id"`
-	Name      string  `json:"name"`
-	Email     string  `json:"-"`
-	Hash      string  `json:"-"`
-	Salt      string  `json:"-"`
-	Equations []int64 `json:"equations"`
-	Timestamp int64   `json:"joined"`
+	ID        int64       `json:"id"`
+	Name      string      `json:"name"`
+	Email     string      `json:"-"`
+	Hash      string      `json:"-"`
+	Salt      string      `json:"-"`
+	Equations []*Equation `json:"equations"`
+	Timestamp int64       `json:"joined"`
 }
 
 // FetchUser fetches a User from the database, by id. Returns an error if the
 // user doesn't exist or other exceptional occurances.
-func FetchUser(db *redis.Client, id int64) (*User, error) {
+func (a *API) FetchUser(id int64) (*User, error) {
 	key := fmt.Sprintf("user:%d", id)
 
-	val, err := db.HGetAll(key).Result()
+	val, err := a.db.HGetAll(key).Result()
 	if err != nil {
 		return nil, ErrDatabase
 	}
@@ -49,8 +47,8 @@ func FetchUser(db *redis.Client, id int64) (*User, error) {
 
 // FetchUserByName fetches a User from the database by name. It looks up to
 // id then just calls FetchUser.
-func FetchUserByName(db *redis.Client, name string) (*User, error) {
-	val, err := db.HGet("usernames", name).Result()
+func (a *API) FetchUserByName(name string) (*User, error) {
+	val, err := a.db.HGet("usernames", name).Result()
 	if err != nil {
 		return nil, ErrUserNotExist
 	}
@@ -60,5 +58,5 @@ func FetchUserByName(db *redis.Client, name string) (*User, error) {
 		return nil, ErrUserInvalidID
 	}
 
-	return FetchUser(db, id)
+	return a.FetchUser(id)
 }
