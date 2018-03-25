@@ -14,6 +14,7 @@ var (
 	ErrUserInvalidID        = errors.New("user has invalid ID")
 
 	ErrEquationNotExist         = errors.New("equation doesn't exist")
+	ErrEquationInvalidID        = errors.New("equation has invalid ID")
 	ErrEquationInvalidTimestamp = errors.New("equation has non-int timestamp")
 	ErrEquationInvalidScore     = errors.New("equation has non-int score")
 	ErrEquationInvalidAuthor    = errors.New("equation has non-int author")

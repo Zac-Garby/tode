@@ -89,6 +89,32 @@ func (a *API) FetchAllEquations() ([]*Equation, error) {
 	return equations, nil
 }
 
+// FetchRandomEquations fetches n random equations from the database.
+func (a *API) FetchRandomEquations(n int64) ([]*Equation, error) {
+	ids, err := a.db.SRandMemberN("equations", n).Result()
+	if err != nil {
+		return nil, ErrDatabase
+	}
+
+	equations := make([]*Equation, len(ids))
+
+	for i, idStr := range ids {
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			return nil, ErrEquationInvalidID
+		}
+
+		eq, err := a.FetchEquation(id)
+		if err != nil {
+			return nil, err
+		}
+
+		equations[i] = eq
+	}
+
+	return equations, nil
+}
+
 func (a *API) getCategories(id int64) ([]string, error) {
 	key := fmt.Sprintf("equation:%d:categories", id)
 

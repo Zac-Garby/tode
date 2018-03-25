@@ -50,7 +50,7 @@ func (a *API) Register(r *mux.Router) error {
 	r.HandleFunc("/api/query/{op:(?:~|=|!|r)}/{query}", a.handleQuery)
 	r.HandleFunc("/api/query/{op:(?:~|=|!|r)}/{query}/{limit:(?:[0-9]+|first)}", a.handleQueryLimit)
 	r.HandleFunc("/api/random", a.handleRandom)
-	r.HandleFunc("/api/random/{number:[0-9]+}", a.handleRandomLimit)
+	r.HandleFunc("/api/random/{limit:[0-9]+}", a.handleRandomLimit)
 	r.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
 	r.HandleFunc("/api/user/id/{id:[0-9]+}", a.handleUserID)
 	r.HandleFunc("/api/eq/{id:[0-9]+}", a.handleEquation)
@@ -69,11 +69,48 @@ func (a *API) handleQueryLimit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) handleRandom(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, `{"error": "not implemented"}`)
+	equations, err := a.FetchRandomEquations(1)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	if len(equations) < 1 {
+		writeError(w, ErrEquationNotExist)
+		return
+	}
+
+	out, err := json.Marshal(equations[0])
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Write(out)
 }
 
 func (a *API) handleRandomLimit(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, `{"error": "not implemented"}`)
+	rawLimit := mux.Vars(r)["limit"]
+
+	limit, err := strconv.ParseInt(rawLimit, 10, 64)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	equations, err := a.FetchRandomEquations(limit)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	out, err := json.Marshal(equations)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Write(out)
 }
 
 func (a *API) handleUser(w http.ResponseWriter, r *http.Request) {
