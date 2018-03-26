@@ -25,6 +25,7 @@ import (
 //  - /api/eq/{id}
 //  - /api/all/users
 //  - /api/all/equations
+//  - /api/new
 //
 // Each route returns its result in the JSON format. You can probably guess what they all do.
 // In the first two, {op} is one of ~, =, !, or r, which mean roughly, contains, doesn't contain, and
@@ -77,6 +78,7 @@ func (a *API) Register(r *mux.Router) error {
 	r.HandleFunc("/api/eq/{id:[0-9]+}", a.handleEquation)
 	r.HandleFunc("/api/all/users", a.handleAllUsers)
 	r.HandleFunc("/api/all/equations", a.handleAllEquations)
+	r.HandleFunc("/api/new", a.handleNew)
 
 	return nil
 }
@@ -230,4 +232,8 @@ func (a *API) handleAllEquations(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(out)
+}
+
+func (a *API) handleNew(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
