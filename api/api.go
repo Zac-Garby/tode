@@ -69,16 +69,19 @@ func (a *API) Register(r *mux.Router) error {
 		return err
 	}
 
-	r.HandleFunc("/api/query/{op:~|=|!|r}/{query}", a.handleQuery)
-	r.HandleFunc("/api/query/{op:~|=|!|r}/{query}/{limit:[0-9]+|all}", a.handleQueryLimit)
-	r.HandleFunc("/api/random", a.handleRandom)
-	r.HandleFunc("/api/random/{limit:[0-9]+}", a.handleRandomLimit)
-	r.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
-	r.HandleFunc("/api/user/id/{id:[0-9]+}", a.handleUserID)
-	r.HandleFunc("/api/eq/{id:[0-9]+}", a.handleEquation)
-	r.HandleFunc("/api/all/users", a.handleAllUsers)
-	r.HandleFunc("/api/all/equations", a.handleAllEquations)
-	r.HandleFunc("/api/new", a.handleNew)
+	get := r.Methods("GET").Subrouter()
+	post := r.Methods("POST").Subrouter()
+
+	get.HandleFunc("/api/query/{op:~|=|!|r}/{query}", a.handleQuery)
+	get.HandleFunc("/api/query/{op:~|=|!|r}/{query}/{limit:[0-9]+|all}", a.handleQueryLimit)
+	get.HandleFunc("/api/random", a.handleRandom)
+	get.HandleFunc("/api/random/{limit:[0-9]+}", a.handleRandomLimit)
+	get.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
+	get.HandleFunc("/api/user/id/{id:[0-9]+}", a.handleUserID)
+	get.HandleFunc("/api/eq/{id:[0-9]+}", a.handleEquation)
+	get.HandleFunc("/api/all/users", a.handleAllUsers)
+	get.HandleFunc("/api/all/equations", a.handleAllEquations)
+	post.HandleFunc("/api/new", a.handleNew)
 
 	return nil
 }
