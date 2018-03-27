@@ -17,7 +17,7 @@ import (
 // It supports a number of routes:
 //
 //  - /api/query/{op}/{query}
-//  - /api/query/{op}/{query}/{limit | "first"}
+//  - /api/query/{op}/{query}/{limit | "all"}
 //  - /api/random
 //  - /api/random/{number}
 //  - /api/user/{name}
@@ -70,7 +70,7 @@ func (a *API) Register(r *mux.Router) error {
 	}
 
 	r.HandleFunc("/api/query/{op:~|=|!|r}/{query}", a.handleQuery)
-	r.HandleFunc("/api/query/{op:~|=|!|r}/{query}/{limit:[0-9]+}", a.handleQueryLimit)
+	r.HandleFunc("/api/query/{op:~|=|!|r}/{query}/{limit:[0-9]+|all}", a.handleQueryLimit)
 	r.HandleFunc("/api/random", a.handleRandom)
 	r.HandleFunc("/api/random/{limit:[0-9]+}", a.handleRandomLimit)
 	r.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
@@ -131,10 +131,15 @@ func (a *API) handleQueryLimit(w http.ResponseWriter, r *http.Request) {
 		qt       QueryType
 	)
 
-	limit, err := strconv.ParseInt(rawLimit, 10, 64)
-	if err != nil {
-		writeError(w, err)
-		return
+	if rawLimit == "all" {
+		limit = 0x7FFFFFFFFFFFFFFF // max int64
+	} else {
+		lim, err := strconv.ParseInt(rawLimit, 10, 64)
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		limit = lim
 	}
 
 	switch op {
