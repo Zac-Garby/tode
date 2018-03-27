@@ -16,16 +16,16 @@ import (
 //
 // It supports a number of routes:
 //
-//  - /api/query/{op}/{query}
-//  - /api/query/{op}/{query}/{limit | "all"}
-//  - /api/random
-//  - /api/random/{number}
-//  - /api/user/{name}
-//  - /api/user/id/{id}
-//  - /api/eq/{id}
-//  - /api/all/users
-//  - /api/all/equations
-//  - /api/new
+//   GET  /api/query/{op}/{query}
+//   GET  /api/query/{op}/{query}/{limit | "all"}
+//   GET  /api/random
+//   GET  /api/random/{number}
+//   GET  /api/user/{name}
+//   GET  /api/user/id/{id}
+//   GET  /api/eq/{id}
+//   GET  /api/all/users
+//   GET  /api/all/equations
+//  POST  /api/new
 //
 // Each route returns its result in the JSON format. You can probably guess what they all do.
 // In the first two, {op} is one of ~, =, !, or r, which mean roughly, contains, doesn't contain, and
