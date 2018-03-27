@@ -69,8 +69,8 @@ func (a *API) Register(r *mux.Router) error {
 		return err
 	}
 
-	r.HandleFunc("/api/query/{op:(?:~|=|!|r)}/{query}", a.handleQuery)
-	r.HandleFunc("/api/query/{op:(?:~|=|!|r)}/{query}/{limit:(?:[0-9]+|first)}", a.handleQueryLimit)
+	r.HandleFunc("/api/query/{op:~|=|!|r}/{query}", a.handleQuery)
+	r.HandleFunc("/api/query/{op:~|=|!|r}/{query}/{limit:[0-9]+}", a.handleQueryLimit)
 	r.HandleFunc("/api/random", a.handleRandom)
 	r.HandleFunc("/api/random/{limit:[0-9]+}", a.handleRandomLimit)
 	r.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
@@ -84,11 +84,83 @@ func (a *API) Register(r *mux.Router) error {
 }
 
 func (a *API) handleQuery(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, `{"error": "not implemented"}`)
+	var (
+		op    = mux.Vars(r)["op"]
+		query = mux.Vars(r)["query"]
+		limit = int64(1)
+		qt    QueryType
+	)
+
+	switch op {
+	case "=":
+		qt = QueryContainExact
+	case "!":
+		qt = QueryNotContain
+	case "r":
+		qt = QueryRegex
+	default:
+		qt = QueryContain
+	}
+
+	equations, err := a.Query(query, qt, limit)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	if len(equations) < 1 {
+		writeError(w, ErrEquationNotExist)
+		return
+	}
+
+	out, err := json.Marshal(equations[0])
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Write(out)
 }
 
 func (a *API) handleQueryLimit(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, `{"error": "not implemented"}`)
+	var (
+		op       = mux.Vars(r)["op"]
+		query    = mux.Vars(r)["query"]
+		rawLimit = mux.Vars(r)["limit"]
+		limit    int64
+		qt       QueryType
+	)
+
+	limit, err := strconv.ParseInt(rawLimit, 10, 64)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	switch op {
+	case "=":
+		qt = QueryContainExact
+	case "!":
+		qt = QueryNotContain
+	case "r":
+		qt = QueryRegex
+	default:
+		qt = QueryContain
+	}
+
+	equations, err := a.Query(query, qt, limit)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	out, err := json.Marshal(equations)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Write(out)
 }
 
 func (a *API) handleRandom(w http.ResponseWriter, r *http.Request) {

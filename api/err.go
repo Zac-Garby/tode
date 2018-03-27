@@ -18,6 +18,8 @@ var (
 	ErrEquationInvalidTimestamp = errors.New("equation has non-int timestamp")
 	ErrEquationInvalidScore     = errors.New("equation has non-int score")
 	ErrEquationInvalidAuthor    = errors.New("equation has non-int author")
+
+	ErrQueryInvalidRegex = errors.New("query is an invalid regex")
 )
 
 func writeError(w http.ResponseWriter, e error) {
