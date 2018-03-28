@@ -16,16 +16,21 @@ import (
 //
 // It supports a number of routes:
 //
-//   GET  /api/query/{op}/{query}
-//   GET  /api/query/{op}/{query}/{limit | "all"}
-//   GET  /api/random
-//   GET  /api/random/{number}
-//   GET  /api/user/{name}
-//   GET  /api/user/id/{id}
-//   GET  /api/eq/{id}
-//   GET  /api/all/users
-//   GET  /api/all/equations
-//  POST  /api/new
+//     GET  /api/query/{op}/{query}
+//     GET  /api/query/{op}/{query}/{limit | "all"}
+//     GET  /api/random
+//     GET  /api/random/{number}
+//     GET  /api/user/{name}
+//     GET  /api/user/id/{id}
+//     GET  /api/equation/{id}
+//     GET  /api/all/users
+//     GET  /api/all/equations
+//
+//     PUT  /api/equation
+//     PUT  /api/user
+//
+//  DELETE  /api/equation
+//  DELETE  /api/user
 //
 // Each route returns its result in the JSON format. You can probably guess what they all do.
 // In the first two, {op} is one of ~, =, !, or r, which mean roughly, contains, doesn't contain, and
@@ -69,8 +74,11 @@ func (a *API) Register(r *mux.Router) error {
 		return err
 	}
 
-	get := r.Methods("GET").Subrouter()
-	post := r.Methods("POST").Subrouter()
+	var (
+		get = r.Methods("GET").Subrouter()
+		put = r.Methods("PUT").Subrouter()
+		del = r.Methods("DELETE").Subrouter()
+	)
 
 	get.HandleFunc("/api/query/{op:~|=|!|r}/{query}", a.handleQuery)
 	get.HandleFunc("/api/query/{op:~|=|!|r}/{query}/{limit:[0-9]+|all}", a.handleQueryLimit)
@@ -78,10 +86,15 @@ func (a *API) Register(r *mux.Router) error {
 	get.HandleFunc("/api/random/{limit:[0-9]+}", a.handleRandomLimit)
 	get.HandleFunc("/api/user/{name:[a-zA-Z0-9_-]+}", a.handleUser)
 	get.HandleFunc("/api/user/id/{id:[0-9]+}", a.handleUserID)
-	get.HandleFunc("/api/eq/{id:[0-9]+}", a.handleEquation)
+	get.HandleFunc("/api/equation/{id:[0-9]+}", a.handleEquation)
 	get.HandleFunc("/api/all/users", a.handleAllUsers)
 	get.HandleFunc("/api/all/equations", a.handleAllEquations)
-	post.HandleFunc("/api/new", a.handleNew)
+
+	put.HandleFunc("/api/equation", a.handlePutEquation)
+	put.HandleFunc("/api/user", a.handlePutUser)
+
+	del.HandleFunc("/api/equation", a.handleDeleteEquation)
+	del.HandleFunc("/api/user", a.handleDeleteUser)
 
 	return nil
 }
@@ -314,6 +327,18 @@ func (a *API) handleAllEquations(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 }
 
-func (a *API) handleNew(w http.ResponseWriter, r *http.Request) {
+func (a *API) handlePutEquation(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, `{"error": "not implemented"}`)
+}
+
+func (a *API) handlePutUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, `{"error": "not implemented"}`)
+}
+
+func (a *API) handleDeleteEquation(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, `{"error": "not implemented"}`)
+}
+
+func (a *API) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `{"error": "not implemented"}`)
 }
